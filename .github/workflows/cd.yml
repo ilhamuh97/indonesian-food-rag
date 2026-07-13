@@ -38,7 +38,7 @@ jobs:
     needs: app
     environment:
       name: Live Server
-      url: https://indo-dish-1.onrender.com/
+      url: ${{ vars.DEPLOYMENT_URL }}
     steps:
       - name: Trigger server deployment
         run: |
