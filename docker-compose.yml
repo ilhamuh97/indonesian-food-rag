@@ -7,22 +7,22 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_DB_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWD}
+      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-#  backend:
-#    build: ./backend
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      POSTGRES_DB_URI: ${POSTGRES_DB_URI}/${POSTGRES_DB}
-#      POSTGRES_DB_USER: ${POSTGRES_DB_USER}
-#      POSTGRES_DB_PASSWD: ${POSTGRES_DB_PASSWD}
-#    depends_on:
-#      - postgres
+  backend:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_DB_URI: ${POSTGRES_DB_URI}/${POSTGRES_DB}
+      POSTGRES_DB_USER: ${POSTGRES_DB_USER}
+      POSTGRES_DB_PASSWORD: ${POSTGRES_DB_PASSWORD}
+    depends_on:
+      - postgres
 
 #  frontend:
 #    build: ./frontend
