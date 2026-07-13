@@ -1,7 +1,7 @@
 import './App.css';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { LoginForm } from "@/components/login-form.tsx";
-import { SignupForm } from "@/components/signup-form.tsx";
+import { LoginForm } from '@/components/login-form.tsx';
+import { SignupForm } from '@/components/signup-form.tsx';
 
 function App() {
   return (
