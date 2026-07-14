@@ -1,18 +1,16 @@
 package org.myspring.backend.model;
 
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
-@RequiredArgsConstructor
-public class UserPrincipal implements UserDetails {
-
-    private final User user;
+public record UserPrincipal(User user) implements UserDetails {
 
     @Override
+    @NonNull
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
     }
@@ -23,7 +21,9 @@ public class UserPrincipal implements UserDetails {
     }
 
     @Override
+    @NonNull
     public String getUsername() {
         return user.getUsername();
     }
+
 }

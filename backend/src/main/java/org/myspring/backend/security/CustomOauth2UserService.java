@@ -43,8 +43,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         attributes.put(PROVIDER_ATTRIBUTE, provider);
 
         userRepository.findByUsername(oAuth2User.getAttribute(LOGIN_ATTRIBUTE))
-                .orElseGet(() -> createUser(attributes)
-                );
+                .orElseGet(() -> createUser(attributes));
 
         String userNameAttributeName =
                 userRequest.getClientRegistration()
