@@ -12,18 +12,21 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.web.client.RestClient;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
     private static final String EMAIL_ATTRIBUTE = "email";
+    private static final String LOGIN_ATTRIBUTE = "login";
+    private static final String PROVIDER_ATTRIBUTE = "provider";
+    private static final String IMAGE_ATTRIBUTE = "avatar_url";
+
     private final UserRepository userRepository;
     private final RestClient githubRestClient;
 
@@ -33,22 +36,43 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         String email = resolveEmail(oAuth2User, userRequest);
-        oAuth2User.getAttributes().put(EMAIL_ATTRIBUTE, email);
+        Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes());
+        attributes.put(EMAIL_ATTRIBUTE, email);
 
-        userRepository.findByUsername(oAuth2User.getName())
-                .orElseGet(() -> createUser(oAuth2User));
+        String provider = userRequest.getClientRegistration().getRegistrationId();
+        attributes.put(PROVIDER_ATTRIBUTE, provider);
+
+        userRepository.findByUsername(oAuth2User.getAttribute(LOGIN_ATTRIBUTE))
+                .orElseGet(() -> createUser(attributes)
+                );
+
+        String userNameAttributeName =
+                userRequest.getClientRegistration()
+                        .getProviderDetails()
+                        .getUserInfoEndpoint()
+                        .getUserNameAttributeName();
+
+
+        if (userNameAttributeName == null) {
+            throw new OAuth2AuthenticationException(
+                    new OAuth2Error("invalid_user_info_response"),
+                    "No user name attribute configured for OAuth2 provider."
+            );
+        }
 
         return new DefaultOAuth2User(
                 oAuth2User.getAuthorities(),
-                oAuth2User.getAttributes(),
-                "id"
+                attributes,
+                userNameAttributeName
         );
     }
 
-    private User createUser(OAuth2User oAuth2User) {
+    private User createUser(Map<String, Object> attributes) {
         User user = User.builder()
-                .username(Objects.requireNonNull(oAuth2User.getAttribute("login")))
-                .email(Objects.requireNonNull(oAuth2User.getAttribute(EMAIL_ATTRIBUTE)))
+                .username(attributes.get(LOGIN_ATTRIBUTE).toString())
+                .email(attributes.get(EMAIL_ATTRIBUTE).toString())
+                .provider(attributes.get(PROVIDER_ATTRIBUTE).toString())
+                .imageUrl(attributes.get(IMAGE_ATTRIBUTE).toString())
                 .role("USER")
                 .build();
 

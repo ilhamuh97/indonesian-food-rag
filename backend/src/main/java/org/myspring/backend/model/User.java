@@ -15,18 +15,24 @@ import java.util.Set;
 @Setter
 @Builder
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String username;
     private String role;
     private String email;
     private String password;
+    private String provider;
+
     @Column(name = "image_url")
     private String imageUrl;
-    @Column(name = "created_at")
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    @Column(name = "updated_at")
+
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @ManyToMany
@@ -36,4 +42,16 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "recipe_id")
     )
     private Set<Recipe> favoriteRecipes = new HashSet<>();
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
