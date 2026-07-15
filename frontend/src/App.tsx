@@ -10,6 +10,7 @@ import ProtectedRoute from './components/protectedRoute/ProtectedRoute.tsx';
 import { getMe, setToken, logout, type CurrentUser } from '@/lib/api';
 
 function App() {
+  //TODO: use ZUSTAND
   const [user, setUser] = useState<CurrentUser | undefined | null>(undefined);
 
   async function refreshUser() {

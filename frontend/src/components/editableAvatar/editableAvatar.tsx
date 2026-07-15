@@ -14,13 +14,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { uploadPhoto } from '@/lib/api';
 
 interface EditableAvatarProps {
   src?: string;
   fallback?: string;
   alt?: string;
   className?: string;
-  onChange?: (dataUrl: string) => void;
 }
 
 export function EditableAvatar({
@@ -28,11 +28,12 @@ export function EditableAvatar({
   fallback = 'ME',
   alt = 'Profile picture',
   className,
-  onChange,
 }: EditableAvatarProps) {
   const [open, setOpen] = useState(false);
+  //TODO: image is not needed, should be from global user
   const [image, setImage] = useState<string | undefined>(src);
   const [preview, setPreview] = useState<string | undefined>(src);
+  const [file, setFile] = useState<File | undefined>();
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,16 +42,20 @@ export function EditableAvatar({
     const reader = new FileReader();
     reader.onload = () => setPreview(reader.result as string);
     reader.readAsDataURL(file);
+    setFile(file);
   }, []);
 
-  const handleSave = () => {
-    setImage(preview);
-    if (preview) onChange?.(preview);
+  const handleSave = async () => {
+    if (file) {
+      const { url } = await uploadPhoto(file);
+      //TODO: this shouldnt be a problem if user is global
+      setImage(url);
+    }
     setOpen(false);
   };
 
   const openModal = () => {
-    setPreview(image);
+    setPreview(src);
     setOpen(true);
   };
 
@@ -66,7 +71,7 @@ export function EditableAvatar({
         )}
       >
         <Avatar className="size-24 border border-border">
-          <AvatarImage src={image || '/placeholder.svg'} alt={alt} />
+          <AvatarImage src={image || src || '/placeholder.svg'} alt={alt} />
           <AvatarFallback className="text-xl">{fallback}</AvatarFallback>
         </Avatar>
         <span className="absolute inset-0 flex items-center justify-center rounded-full bg-foreground/50 opacity-0 transition-opacity group-hover:opacity-100">

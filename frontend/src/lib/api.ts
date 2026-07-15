@@ -64,6 +64,18 @@ export async function getMe(): Promise<CurrentUser> {
   return data;
 }
 
+export async function uploadPhoto(file: File): Promise<{ url: string }> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const { data } = await http.post<{ url: string }>('/api/user/upload-photo', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return data;
+}
+
 export function logout(): void {
   clearToken();
 }

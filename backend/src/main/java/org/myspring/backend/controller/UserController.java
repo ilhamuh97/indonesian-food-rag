@@ -19,6 +19,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
 
+
+    // TODO: put cloudinaryService inside userService.updateUser()
     private final UserService service;
     private final CloudinaryService cloudinaryService;
 
@@ -46,6 +48,8 @@ public class UserController {
             @RequestPart(name = "file", required = false) MultipartFile file) throws IOException {
 
         String url = cloudinaryService.upload(file);
+        // TODO: store to db
+        // TODO: put cloudinaryService inside userService.updateUser()
 
         return ResponseEntity.ok(
                 Map.of("url", url)

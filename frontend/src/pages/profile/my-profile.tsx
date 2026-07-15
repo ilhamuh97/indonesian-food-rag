@@ -35,6 +35,7 @@ export default function MyProfile({ user }: Readonly<MyProfileProps>) {
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Full Name</span>
             <div className="flex items-center gap-2">
+              //TODO: easier with zustand
               {editable ? (
                 <Input
                   value={fullname}
