@@ -21,7 +21,10 @@ function DropdownMenuContent({
   align = 'end',
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Popup> &
-  Pick<React.ComponentProps<typeof DropdownMenuPrimitive.Positioner>, 'sideOffset' | 'align' | 'side'>) {
+  Pick<
+    React.ComponentProps<typeof DropdownMenuPrimitive.Positioner>,
+    'sideOffset' | 'align' | 'side'
+  >) {
   return (
     <DropdownMenuPortal>
       <DropdownMenuPrimitive.Positioner
