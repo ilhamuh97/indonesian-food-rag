@@ -1,0 +1,75 @@
+package org.myspring.backend.controller;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.myspring.backend.dto.RecipeResponse;
+import org.myspring.backend.dto.RecipeSuggestionResponse;
+import org.myspring.backend.service.RecipeService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class RecipeControllerTest {
+
+    @Mock
+    private RecipeService recipeService;
+
+    @InjectMocks
+    private RecipeController recipeController;
+
+    @Test
+    void getRecipes_delegatesToServiceAndReturnsItsResult() {
+        RecipeResponse rendang = new RecipeResponse(
+                1L, "Rendang", "Simmer beef in coconut milk.",
+                List.of("beef", "coconut milk"), LocalDateTime.now(), LocalDateTime.now()
+        );
+        Page<RecipeResponse> page = new PageImpl<>(List.of(rendang));
+        when(recipeService.getRecipes(0, 10, "id", "asc", "rendang")).thenReturn(page);
+
+        Page<RecipeResponse> result = recipeController.getRecipes(0, 10, "id", "asc", "rendang");
+
+        assertThat(result.getContent()).containsExactly(rendang);
+        verify(recipeService).getRecipes(0, 10, "id", "asc", "rendang");
+    }
+
+    @Test
+    void getRecipes_passesNullSearchThrough_whenNotProvided() {
+        Page<RecipeResponse> page = new PageImpl<>(List.of());
+        when(recipeService.getRecipes(0, 10, "id", "asc", null)).thenReturn(page);
+
+        Page<RecipeResponse> result = recipeController.getRecipes(0, 10, "id", "asc", null);
+
+        assertThat(result.getContent()).isEmpty();
+        verify(recipeService).getRecipes(0, 10, "id", "asc", null);
+    }
+
+    @Test
+    void autocomplete_delegatesToServiceWithQueryAndLimit() {
+        RecipeSuggestionResponse suggestion = new RecipeSuggestionResponse(1L, "Rendang");
+        when(recipeService.autocomplete("ren", 5)).thenReturn(List.of(suggestion));
+
+        List<RecipeSuggestionResponse> result = recipeController.autocomplete("ren", 5);
+
+        assertThat(result).containsExactly(suggestion);
+        verify(recipeService).autocomplete("ren", 5);
+    }
+
+    @Test
+    void autocomplete_returnsEmptyList_whenServiceFindsNoMatches() {
+        when(recipeService.autocomplete("zzz", 10)).thenReturn(List.of());
+
+        List<RecipeSuggestionResponse> result = recipeController.autocomplete("zzz", 10);
+
+        assertThat(result).isEmpty();
+    }
+}
