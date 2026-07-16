@@ -81,30 +81,55 @@ export function logout(): void {
   clearToken();
 }
 
-export async function getRecipes(params: GetRecipesParams = {}): Promise<Page<Recipe>> {
-  const { data } = await http.get<Page<Recipe>>('/api/recipe', { params });
+export async function getRecipes(
+  params: GetRecipesParams = {},
+  signal?: AbortSignal,
+): Promise<Page<Recipe>> {
+  const { data } = await http.get<Page<Recipe>>('/api/recipe', {
+    params,
+    signal,
+  });
+
   return data;
 }
 
-export async function getSelectedRecipe({ id }: GetSelectedRecipeParams): Promise<Recipe> {
-  const { data } = await http.get<Recipe>(`/api/recipe/${id}`);
+export async function getSelectedRecipe(
+  { id }: GetSelectedRecipeParams,
+  signal?: AbortSignal,
+): Promise<Recipe> {
+  const { data } = await http.get<Recipe>(`/api/recipe/${id}`, {
+    signal,
+  });
+
   return data;
 }
 
-export async function autocompleteRecipes(query: string, limit = 8): Promise<RecipeSuggestion[]> {
+export async function autocompleteRecipes(
+  query: string,
+  limit = 8,
+  signal?: AbortSignal,
+): Promise<RecipeSuggestion[]> {
   if (!query.trim()) {
     return [];
   }
+
   const { data } = await http.get<RecipeSuggestion[]>('/api/recipe/autocomplete', {
     params: { query, limit },
+    signal,
   });
+
   return data;
 }
 
 export async function getFavoriteRecipesByUserId(
   params: GetFavoriteRecipeParams = {},
+  signal?: AbortSignal,
 ): Promise<Page<Recipe>> {
-  const { data } = await http.get<Page<Recipe>>('/api/recipe/favorites', { params });
+  const { data } = await http.get<Page<Recipe>>('/api/recipe/favorites', {
+    params,
+    signal,
+  });
+
   return data;
 }
 

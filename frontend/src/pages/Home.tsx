@@ -16,7 +16,6 @@ export default function Home() {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const searchBoxRef = useRef<HTMLDivElement>(null);
-  const suggestionRequestId = useRef(0);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -30,19 +29,30 @@ export default function Home() {
 
   useEffect(() => {
     const query = searchInput.trim();
+
     if (query.length < 3) {
       setSuggestions([]);
       return;
     }
-    const requestId = ++suggestionRequestId.current;
+
+    const controller = new AbortController();
+
     const timeout = setTimeout(() => {
-      autocompleteRecipes(query).then((results) => {
-        if (requestId === suggestionRequestId.current) {
+      autocompleteRecipes(query, 8, controller.signal)
+        .then((results) => {
           setSuggestions(results);
-        }
-      });
+        })
+        .catch((error) => {
+          if (error.name !== 'CanceledError') {
+            console.error(error);
+          }
+        });
     }, DEBOUNCE_300_MS);
-    return () => clearTimeout(timeout);
+
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, [searchInput]);
 
   function applySearch(value: string) {
