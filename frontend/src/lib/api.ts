@@ -5,6 +5,7 @@ import type {
   RecipeSuggestion,
   GetRecipesParams,
   GetSelectedRecipeParams,
+  GetFavoriteRecipeParams,
 } from '../types/Recipe.ts';
 
 export interface CurrentUser {
@@ -98,4 +99,19 @@ export async function autocompleteRecipes(query: string, limit = 8): Promise<Rec
     params: { query, limit },
   });
   return data;
+}
+
+export async function getFavoriteRecipesByUserId(
+  params: GetFavoriteRecipeParams = {},
+): Promise<Page<Recipe>> {
+  const { data } = await http.get<Page<Recipe>>('/api/recipe/favorites', { params });
+  return data;
+}
+
+export async function addFavoriteRecipe(id: number): Promise<void> {
+  await http.post(`/api/recipe/${id}/favorite`);
+}
+
+export async function removeFavoriteRecipe(id: number): Promise<void> {
+  await http.delete(`/api/recipe/${id}/favorite`);
 }
