@@ -1,8 +1,15 @@
 import axios from 'axios';
-import type { Recipe, Page, RecipeSuggestion, GetRecipesParams } from '../types/Recipe.ts';
+import type {
+  Recipe,
+  Page,
+  RecipeSuggestion,
+  GetRecipesParams,
+  GetSelectedRecipeParams,
+} from '../types/Recipe.ts';
 
 export interface CurrentUser {
   username: string;
+  fullname: string;
   email: string;
   imageUrl: string | null;
   provider: string | null;
@@ -44,6 +51,7 @@ export interface RegisterPayload {
   username: string;
   email: string;
   password: string;
+  fullname: string;
 }
 
 export async function register(payload: RegisterPayload): Promise<CurrentUser> {
@@ -56,12 +64,29 @@ export async function getMe(): Promise<CurrentUser> {
   return data;
 }
 
+export async function uploadPhoto(file: File): Promise<{ url: string }> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const { data } = await http.post<{ url: string }>('/api/user/upload-photo', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return data;
+}
+
 export function logout(): void {
   clearToken();
 }
 
 export async function getRecipes(params: GetRecipesParams = {}): Promise<Page<Recipe>> {
   const { data } = await http.get<Page<Recipe>>('/api/recipe', { params });
+  return data;
+}
+
+export async function getSelectedRecipe({ id }: GetSelectedRecipeParams): Promise<Recipe> {
+  const { data } = await http.get<Recipe>(`/api/recipe/${id}`);
   return data;
 }
 
