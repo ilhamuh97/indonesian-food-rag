@@ -31,17 +31,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog.tsx';
-import { autocompleteRecipes, getRecipes, type CurrentUser } from '@/lib/api.ts';
+import { autocompleteRecipes, getRecipes } from '@/lib/api.ts';
 import type { Page, Recipe, RecipeSuggestion } from '@/types/Recipe.ts';
 
 import { PAGE_SIZE } from '../constants/page.ts';
 import { DEBOUNCE_300_MS } from '@/constants/debounce.ts';
 
-type HomeProps = {
-  user: CurrentUser;
-};
-
-export default function Home({ user }: Readonly<HomeProps>) {
+export default function Home() {
   const [searchInput, setSearchInput] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
   const [suggestions, setSuggestions] = useState<RecipeSuggestion[]>([]);
