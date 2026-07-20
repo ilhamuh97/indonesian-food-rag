@@ -19,6 +19,10 @@ export default function MyProfile({ user }: Readonly<MyProfileProps>) {
   const updateUser = useAppStore((state) => state.updateUser);
 
   const handleSubmit = async () => {
+    if (user.fullname === fullname) {
+      setEditable(false);
+      return;
+    }
     const updatedUser = await updateUserApi({ ...user, fullname: fullname });
     updateUser(updatedUser);
     setFullname(fullname);
@@ -29,11 +33,7 @@ export default function MyProfile({ user }: Readonly<MyProfileProps>) {
     <div className="mx-auto w-full max-w-md">
       <Card>
         <CardHeader className="flex flex-col items-center gap-2 text-center">
-          <EditableAvatar
-            fallback={user.username.charAt(0).toUpperCase()}
-            src={user.imageUrl ?? undefined}
-            alt={user.username}
-          />
+          <EditableAvatar fallback={user.username.charAt(0).toUpperCase()} alt={user.username} />
           <CardTitle>{user.username}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
