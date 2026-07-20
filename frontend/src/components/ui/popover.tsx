@@ -21,10 +21,7 @@ function PopoverContent({
   align = 'end',
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Popup> &
-  Pick<
-    React.ComponentProps<typeof PopoverPrimitive.Positioner>,
-    'sideOffset' | 'align' | 'side'
-  >) {
+  Pick<React.ComponentProps<typeof PopoverPrimitive.Positioner>, 'sideOffset' | 'align' | 'side'>) {
   return (
     <PopoverPortal>
       <PopoverPrimitive.Positioner

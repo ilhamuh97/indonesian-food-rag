@@ -76,4 +76,10 @@ function NumberFieldInput({
   );
 }
 
-export { NumberField, NumberFieldGroup, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput };
+export {
+  NumberField,
+  NumberFieldGroup,
+  NumberFieldDecrement,
+  NumberFieldIncrement,
+  NumberFieldInput,
+};

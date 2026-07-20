@@ -20,11 +20,7 @@ import {
 } from '@/components/ui/table.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Label } from '@/components/ui/label.tsx';
-import {
-  NumberField,
-  NumberFieldGroup,
-  NumberFieldInput,
-} from '@/components/ui/number-field.tsx';
+import { NumberField, NumberFieldGroup, NumberFieldInput } from '@/components/ui/number-field.tsx';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
 import {
   Select,

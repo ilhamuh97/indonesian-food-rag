@@ -43,10 +43,7 @@ function SelectContent({
   align = 'start',
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Popup> &
-  Pick<
-    React.ComponentProps<typeof SelectPrimitive.Positioner>,
-    'sideOffset' | 'align' | 'side'
-  >) {
+  Pick<React.ComponentProps<typeof SelectPrimitive.Positioner>, 'sideOffset' | 'align' | 'side'>) {
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Positioner
