@@ -8,7 +8,6 @@ import org.myspring.backend.dto.response.RecipeDetailResponse;
 import org.myspring.backend.dto.response.RecipeSuggestionResponse;
 import org.myspring.backend.model.UserPrincipal;
 import org.myspring.backend.service.RecipeService;
-import org.myspring.backend.service.rag.RagService;
 import org.myspring.backend.service.rag.RecipeChatService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
