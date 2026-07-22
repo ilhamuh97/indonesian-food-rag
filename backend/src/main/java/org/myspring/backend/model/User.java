@@ -3,8 +3,6 @@ package org.myspring.backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.myspring.backend.dto.UserDto;
-import org.myspring.backend.dto.request.RegisterRequest;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;

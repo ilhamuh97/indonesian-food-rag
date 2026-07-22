@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.myspring.backend.dto.response.RecipeDetailResponse;
 import org.myspring.backend.dto.response.RecipeResponse;
@@ -207,7 +208,7 @@ class RecipeServiceTest {
         Page<RecipeResponse> result = recipeService.getFavoriteRecipes(1L, 0, 10, "soto");
 
         assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getContent().get(0).title()).isEqualTo("Soto Ayam");
+        assertThat(result.getContent().getFirst().title()).isEqualTo("Soto Ayam");
         verify(recipeRepository, never()).findByFavoritedByUsers_Id(anyLong(), any());
     }
 
@@ -227,13 +228,14 @@ class RecipeServiceTest {
         List<RecipeSuggestionResponse> result = recipeService.autocomplete("   ", 10);
 
         assertThat(result).isEmpty();
-        verify(recipeRepository, never()).findAll(any(Specification.class), any(Pageable.class));
+        verify(recipeRepository, never())
+                .findAll(Mockito.<Specification<Recipe>>any(), any(Pageable.class));
     }
 
     @Test
     void autocomplete_returnsMappedSuggestions_whenQueryProvided() {
         Recipe soto = newRecipe(2L, "Soto Ayam");
-        when(recipeRepository.findAll(any(Specification.class), any(Pageable.class)))
+        when(recipeRepository.findAll(Mockito.<Specification<Recipe>>any(), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(soto)));
 
         List<RecipeSuggestionResponse> result = recipeService.autocomplete("soto", 10);
@@ -246,7 +248,7 @@ class RecipeServiceTest {
     void autocomplete_respectsLimitParameter() {
         Recipe soto = newRecipe(2L, "Soto Ayam");
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
-        when(recipeRepository.findAll(any(Specification.class), pageableCaptor.capture()))
+        when(recipeRepository.findAll(Mockito.<Specification<Recipe>>any(), pageableCaptor.capture()))
                 .thenReturn(new PageImpl<>(List.of(soto)));
 
         recipeService.autocomplete("soto", 1);
