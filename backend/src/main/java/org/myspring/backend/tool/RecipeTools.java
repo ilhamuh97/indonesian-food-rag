@@ -28,9 +28,11 @@ public class RecipeTools {
             """)
     public List<RecipeAskResponse> searchRecipes(String query) {
 
+        // embed question
         float[] vector =
                 embeddingModel.embed(query);
 
+        // search vector
         List<Long> recipeIds =
                 embeddingRepository.findSimilarRecipeIds(
                         VectorConverter.toPgVector(vector),
@@ -41,6 +43,7 @@ public class RecipeTools {
             return new ArrayList<>();
         }
 
+        // get by recipe id
         return recipeRepository.findAllById(recipeIds).stream()
                 .map(RecipeAskResponse::fromRecipe)
                 .toList();
