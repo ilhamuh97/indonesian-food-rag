@@ -67,6 +67,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="/profile" element={<MyProfile user={user!} />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/chat/:conversationId" element={<Chat />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" />} />

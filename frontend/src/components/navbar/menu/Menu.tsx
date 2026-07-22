@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   HomeIcon,
@@ -37,6 +37,7 @@ export default function Menu() {
   const [open, setOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const navigate = useNavigate();
+  const { conversationId } = useParams<{ conversationId: string }>();
 
   const [conversations, loadingConversations] = useAsyncData<Conversation[]>(
     (signal) => getConversations(signal),
@@ -46,6 +47,11 @@ export default function Menu() {
 
   function goToChat() {
     navigate('/chat');
+    setOpen(false);
+  }
+
+  function goToConversation(id: number) {
+    navigate(`/chat/${id}`);
     setOpen(false);
   }
 
@@ -85,16 +91,23 @@ export default function Menu() {
                       {loadingConversations ? (
                         <p className="px-2.5 py-1.5 text-sm text-muted-foreground">Loading…</p>
                       ) : conversations && conversations.length > 0 ? (
-                        conversations.map((conversation) => (
-                          <button
-                            key={conversation.id}
-                            type="button"
-                            onClick={goToChat}
-                            className="truncate rounded-md px-2.5 py-1.5 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                          >
-                            {conversation.title}
-                          </button>
-                        ))
+                        conversations.map((conversation) => {
+                          const isActive = conversationId === String(conversation.id);
+                          return (
+                            <button
+                              key={conversation.id}
+                              type="button"
+                              onClick={() => goToConversation(conversation.id)}
+                              className={`truncate rounded-md px-2.5 py-1.5 text-left text-sm transition-colors ${
+                                isActive
+                                  ? 'bg-muted text-foreground'
+                                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                              }`}
+                            >
+                              {conversation.title}
+                            </button>
+                          );
+                        })
                       ) : (
                         <p className="px-2.5 py-1.5 text-sm text-muted-foreground">
                           No conversations yet.
@@ -106,10 +119,6 @@ export default function Menu() {
               </Accordion>
 
               <section className="mt-auto flex flex-col gap-1 border-t border-border pt-4">
-                <button type="button" onClick={goToChat} className={menuActionClass}>
-                  <HugeiconsIcon icon={ChatAdd01Icon} size={18} className="h-4 w-4" />
-                  New Chat
-                </button>
                 <button
                   type="button"
                   onClick={() => {

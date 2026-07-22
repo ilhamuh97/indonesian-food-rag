@@ -66,3 +66,41 @@ export async function getMessages(
   void signal;
   return mockMessagesByConversationId[conversationId] ?? [];
 }
+
+function delay(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(resolve, ms);
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timeout);
+      reject(new DOMException('Aborted', 'AbortError'));
+    });
+  });
+}
+
+const CANNED_REPLIES = [
+  "Great question! For Indonesian cooking, I'd start with the spice paste (bumbu) first.",
+  "I can help with that — could you tell me a bit more about what you're making?",
+  "That sounds delicious. Here's a tip: toast your spices briefly before adding liquid for more depth.",
+];
+
+let nextReplyIndex = 0;
+
+export async function sendMessage(
+  conversationId: number,
+  content: string,
+  signal?: AbortSignal,
+): Promise<Message> {
+  void content;
+  await delay(1200, signal);
+
+  const reply = CANNED_REPLIES[nextReplyIndex % CANNED_REPLIES.length];
+  nextReplyIndex += 1;
+
+  return {
+    id: Date.now(),
+    conversationId,
+    role: 'assistant',
+    content: reply,
+    createdAt: new Date().toISOString(),
+  };
+}
