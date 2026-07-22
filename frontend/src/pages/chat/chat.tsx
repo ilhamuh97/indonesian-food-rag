@@ -103,7 +103,12 @@ export default function Chat() {
         <div ref={bottomRef} />
       </div>
 
-      <MessageInputGroup value={input} onChange={setInput} onSubmit={handleSend} sending={sending} />
+      <MessageInputGroup
+        value={input}
+        onChange={setInput}
+        onSubmit={handleSend}
+        sending={sending}
+      />
     </div>
   );
 }

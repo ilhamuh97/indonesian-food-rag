@@ -42,11 +42,7 @@ function Bubble({ className, variant, align, ...props }: BubbleProps) {
   );
 }
 
-function BubbleContent({
-  className,
-  render = <div />,
-  ...props
-}: useRender.ComponentProps<'div'>) {
+function BubbleContent({ className, render = <div />, ...props }: useRender.ComponentProps<'div'>) {
   return useRender({
     render,
     props: {
