@@ -1,14 +1,15 @@
 package org.myspring.backend.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.myspring.backend.dto.request.RagRequest;
-import org.myspring.backend.dto.response.RecipeAskResponse;
+import org.myspring.backend.dto.request.ChatRequest;
+import org.myspring.backend.dto.response.ChatResponse;
 import org.myspring.backend.dto.response.RecipeResponse;
 import org.myspring.backend.dto.response.RecipeDetailResponse;
 import org.myspring.backend.dto.response.RecipeSuggestionResponse;
 import org.myspring.backend.model.UserPrincipal;
 import org.myspring.backend.service.RecipeService;
 import org.myspring.backend.service.rag.RagService;
+import org.myspring.backend.service.rag.RecipeChatService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,7 +23,7 @@ import java.util.List;
 public class RecipeController {
 
     private final RecipeService recipeService;
-    private final RagService ragService;
+    private final RecipeChatService recipeChatService;
 
     @GetMapping
     public ResponseEntity<Page<RecipeResponse>> getRecipes(
@@ -87,13 +88,19 @@ public class RecipeController {
     }
 
     @PostMapping("/ask")
-    public List<RecipeAskResponse> search(
-            @RequestBody RagRequest request
+    public ChatResponse search(
+            @RequestBody ChatRequest request
     ) {
+        String conversationId = request.conversationId() != null
+                ? request.conversationId()
+                : "guest-1";
 
-        return ragService.retrieve(
-                request.question()
-        );
+        String answer = recipeChatService.askQuestion(conversationId, request.question());
+
+        return ChatResponse.builder()
+                .conversationId(conversationId)
+                .answer(answer)
+                .build();
 
     }
 }

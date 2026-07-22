@@ -1,6 +1,7 @@
 package org.myspring.backend.dto.request;
 
-public record RagRequest(
+public record ChatRequest(
+        String conversationId,
         String question
 ) {
 }
