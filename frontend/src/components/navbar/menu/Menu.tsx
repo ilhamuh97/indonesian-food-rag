@@ -11,7 +11,7 @@ import {
   AccordionPanel,
 } from '@/components/ui/accordion.tsx';
 import SettingsDialog from '@/components/settingsDialog/SettingsDialog.tsx';
-import { getConversations } from '@/lib/mockChatApi.ts';
+import { getConversations } from '@/lib/api';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors ${

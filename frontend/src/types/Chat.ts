@@ -1,10 +1,11 @@
-export type MessageRole = 'user' | 'assistant' | 'system';
+export type MessageRole = 'USER' | 'ASSISTANT' | 'SYSTEM';
 
 export interface Conversation {
   id: number;
   title: string;
   createdAt: string;
   updatedAt: string;
+  messages: Message[];
 }
 
 export interface Message {

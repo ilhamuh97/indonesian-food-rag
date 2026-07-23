@@ -7,7 +7,7 @@ import type {
   GetSelectedRecipeParams,
   GetFavoriteRecipeParams,
 } from '../types/Recipe.ts';
-import type { Message, MessageRequest } from '@/types/Chat.ts';
+import type { Conversation, Message, MessageRequest } from '@/types/Chat.ts';
 
 export interface CurrentUser {
   id: number;
@@ -155,11 +155,15 @@ export async function sendMessage(messageRequest: MessageRequest): Promise<Messa
   return data;
 }
 
-export async function getMessages(
-  _conversationId: number,
-  _signal?: AbortSignal,
-): Promise<Message[]> {
-  // const { data } = await http.get<Message[]>(`/api/conversation/${conversationId}`, { signal });
-  // return data;
-  return [];
+export async function getDetailConversation(
+  conversationId: number,
+  signal?: AbortSignal,
+): Promise<Conversation> {
+  const { data } = await http.get<Conversation>(`/api/conversation/${conversationId}`, { signal });
+  return data;
+}
+
+export async function getConversations(signal?: AbortSignal): Promise<Conversation[]> {
+  const { data } = await http.get<Conversation[]>(`/api/conversation`, { signal });
+  return data;
 }
