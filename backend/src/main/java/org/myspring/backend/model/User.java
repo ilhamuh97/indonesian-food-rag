@@ -46,6 +46,7 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @JsonIgnore
     @ManyToMany
     @JoinTable(
