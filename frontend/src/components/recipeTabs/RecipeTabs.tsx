@@ -13,7 +13,7 @@ import {
 } from '@/lib/api.ts';
 import { PAGE_SIZE } from '@/constants/page.ts';
 
-import type { Page, Recipe, RecipeTab } from '@/types/Recipe.ts';
+import { emptyPage, type Page, type Recipe, type RecipeTab } from '@/types/Recipe.ts';
 
 function applyFavorite(recipeId: number, favorited: boolean) {
   return (old: Page<Recipe> | Recipe | undefined) => {
@@ -110,7 +110,7 @@ export default function RecipeTabs({ appliedSearch }: RecipeTabsProps) {
         </TabsList>
         <TabsContent value="all">
           <RecipeList
-            recipesPage={recipesPage ?? null}
+            recipesPage={recipesPage ?? emptyPage(pageSize)}
             loading={loading}
             appliedSearch={appliedSearch}
             onSelectRecipe={setSelectedRecipeId}
@@ -123,7 +123,7 @@ export default function RecipeTabs({ appliedSearch }: RecipeTabsProps) {
         </TabsContent>
         <TabsContent value="favorites">
           <RecipeList
-            recipesPage={favoritesPage ?? null}
+            recipesPage={favoritesPage ?? emptyPage(pageSize)}
             loading={loadingFavorites}
             appliedSearch={appliedSearch}
             onSelectRecipe={setSelectedRecipeId}
