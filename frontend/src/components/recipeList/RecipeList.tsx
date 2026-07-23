@@ -73,7 +73,7 @@ interface RecipeListProps {
   onSelectRecipe: (id: number) => void;
   onPageChange: (updater: (page: number) => number) => void;
   pageSize: number;
-  onPageSizeChange: (updater: (size: number) => number) => void;
+  onPageSizeChange: (size: number) => void;
   onToggleFavorite: (recipe: Recipe) => void;
   activeTab: RecipeTab;
 }
@@ -128,8 +128,8 @@ export default function RecipeList({
                   value={pageSize}
                   disabled={loading}
                   onValueChange={(size) => {
-                    if (!!size) {
-                      onPageSizeChange(() => size);
+                    if (size) {
+                      onPageSizeChange(size);
                     }
                   }}
                 >

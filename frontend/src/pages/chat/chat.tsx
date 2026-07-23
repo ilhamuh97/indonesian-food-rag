@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAsyncData } from '@/hooks/useAsyncData.ts';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { getMessages, sendMessage } from '@/lib/mockChatApi.ts';
 import BubbleMessage from '@/components/chat/BubbleMessage.tsx';
 import BubbleSpinner from '@/components/chat/BubbleSpinner.tsx';
@@ -12,16 +12,31 @@ export default function Chat() {
   const { conversationId: conversationIdParam } = useParams<{ conversationId: string }>();
   const conversationId = conversationIdParam ? Number(conversationIdParam) : null;
 
-  const [seedMessages, loading] = useAsyncData<ChatMessage[]>(
-    (signal) => getMessages(conversationId as number, signal),
-    [conversationId],
-    conversationId !== null,
-  );
+  const { data: seedMessages, isLoading: loading } = useQuery({
+    queryKey: ['chat', 'messages', conversationId],
+    queryFn: ({ signal }) => getMessages(conversationId as number, signal),
+    enabled: conversationId !== null,
+  });
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
-  const [sending, setSending] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const sendMutation = useMutation({
+    mutationFn: ({ content, signal }: { content: string; signal: AbortSignal }) =>
+      sendMessage(conversationId ?? 0, content, signal),
+    onSuccess: (reply, { signal }) => {
+      if (!signal.aborted) {
+        setMessages((prev) => [...prev, reply]);
+      }
+    },
+    onError: (error, { signal }) => {
+      if (!signal.aborted && error.name !== 'AbortError') {
+        console.error(error);
+      }
+    },
+  });
+  const sending = sendMutation.isPending;
 
   useEffect(() => {
     if (conversationId === null) {
@@ -62,27 +77,11 @@ export default function Chat() {
       },
     ]);
     setInput('');
-    setSending(true);
 
     const controller = new AbortController();
     abortRef.current = controller;
 
-    sendMessage(conversationId ?? 0, content, controller.signal)
-      .then((reply) => {
-        if (!controller.signal.aborted) {
-          setMessages((prev) => [...prev, reply]);
-        }
-      })
-      .catch((error) => {
-        if (error.name !== 'AbortError') {
-          console.error(error);
-        }
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) {
-          setSending(false);
-        }
-      });
+    sendMutation.mutate({ content, signal: controller.signal });
   }
 
   return (
