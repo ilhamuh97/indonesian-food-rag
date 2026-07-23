@@ -3,11 +3,11 @@ package org.myspring.backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.myspring.backend.dto.UserDto;
-import org.myspring.backend.dto.request.RegisterRequest;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,12 +22,17 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String username;
+
     private String fullname;
+
     private String role;
+
     @Column(unique = true)
     private String email;
+
     @JsonIgnore
     private String password;
     private String provider;
@@ -41,6 +46,7 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @JsonIgnore
     @ManyToMany
     @JoinTable(
@@ -49,6 +55,14 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "recipe_id")
     )
     private Set<Recipe> favoriteRecipes = new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Conversation> conversations = new ArrayList<>();
+
 
     @PrePersist
     protected void onCreate() {
