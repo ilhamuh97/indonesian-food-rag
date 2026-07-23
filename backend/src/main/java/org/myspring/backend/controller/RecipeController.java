@@ -88,7 +88,6 @@ public class RecipeController {
 
     @PostMapping("/ask")
     public ChatResponse search(@AuthenticationPrincipal UserPrincipal principal, @RequestBody ChatRequest request) {
-        System.out.println(request);
         return recipeChatService.askQuestion(principal.user().getId(), request, request.content());
     }
 }

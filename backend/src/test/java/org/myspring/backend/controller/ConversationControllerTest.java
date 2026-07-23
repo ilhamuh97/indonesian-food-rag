@@ -118,7 +118,7 @@ class ConversationControllerTest {
     }
 
     @Test
-    void getDetailConversations_returnsConversation() throws Exception {
+    void getDetailConversation_returnsConversation() throws Exception {
         given(conversationService.getConversationById(eq(10L), eq(USER_ID)))
                 .willReturn(sampleConversation());
 
@@ -129,7 +129,7 @@ class ConversationControllerTest {
     }
 
     @Test
-    void getDetailConversations_notFound_returns404() throws Exception {
+    void getDetailConversation_notFound_returns404() throws Exception {
         given(conversationService.getConversationById(eq(999L), anyLong()))
                 .willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Conversation not found"));
 

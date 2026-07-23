@@ -25,7 +25,7 @@ public class ConversationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ConversationResponse> getDetailConversations(
+    public ResponseEntity<ConversationResponse> getDetailConversation(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id
     ) {
