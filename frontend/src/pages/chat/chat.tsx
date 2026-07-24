@@ -1,12 +1,11 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import BubbleMessage from '@/components/chat/BubbleMessage.tsx';
 import BubbleSpinner from '@/components/chat/BubbleSpinner.tsx';
 import MessageInputGroup from '@/components/chat/MessageInputGroup.tsx';
 import ChatSkeleton from '@/components/skeletons/ChatSkeleton.tsx';
-import type { Message as ChatMessage } from '@/types/Chat.ts';
+import type { Conversation, Message as ChatMessage } from '@/types/Chat.ts';
 import { getDetailConversation, sendMessage } from '@/lib/api';
 
 export default function Chat() {
@@ -18,17 +17,32 @@ export default function Chat() {
     queryFn: ({ signal }) => getDetailConversation(conversationId as number, signal),
     enabled: conversationId !== null,
   });
-  //TODO: might not be working
   const [messages, setMessages] = useState<ChatMessage[]>(seedMessages?.messages ?? []);
+  // Tracks the previous conversationId/seedMessages seen so `messages` can be
+  // reset/synced during render instead of via a setState-in-effect round trip.
+  const [prevConversationId, setPrevConversationId] = useState(conversationId);
+  const [prevSeedMessages, setPrevSeedMessages] = useState(seedMessages);
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const sendMutation = useMutation({
     mutationFn: ({ content }: { content: string }) => sendMessage({ conversationId, content }),
     onSuccess: (reply) => {
+      const updatedMessages = [...messages, reply];
+      // Prime the cache for the (possibly brand-new) conversationId with what we
+      // already have locally, so the query triggered by navigating below finds
+      // fresh data immediately instead of refetching and re-flashing the list.
+      queryClient.setQueryData<Conversation>(['chat', 'messages', reply.conversationId], (old) => ({
+        id: reply.conversationId as number,
+        title: old?.title ?? '',
+        createdAt: old?.createdAt ?? reply.createdAt,
+        updatedAt: reply.createdAt,
+        messages: updatedMessages,
+      }));
+      setMessages(updatedMessages);
       navigate(`/chat/${reply.conversationId}`, { replace: true });
-      setMessages((prev) => [...prev, reply]);
     },
     onError: (error) => {
       console.error(error);
@@ -36,17 +50,19 @@ export default function Chat() {
   });
   const sending = sendMutation.isPending;
 
-  useEffect(() => {
+  if (conversationId !== prevConversationId) {
+    setPrevConversationId(conversationId);
     if (conversationId === null) {
       setMessages([]);
     }
-  }, [conversationId]);
+  }
 
-  useEffect(() => {
+  if (seedMessages !== prevSeedMessages) {
+    setPrevSeedMessages(seedMessages);
     if (conversationId !== null && seedMessages) {
       setMessages(seedMessages.messages);
     }
-  }, [seedMessages, conversationId]);
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -74,9 +90,10 @@ export default function Chat() {
 
     sendMutation.mutate({ content });
   }
+
   return (
-    <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col">
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto py-4">
+    <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col p-8">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto py-4 my-18">
         {loading ? (
           <ChatSkeleton />
         ) : messages.length === 0 && !sending ? (
@@ -91,7 +108,6 @@ export default function Chat() {
         )}
         <div ref={bottomRef} />
       </div>
-
       <MessageInputGroup inputRef={inputRef} onSubmit={handleSend} sending={sending} />
     </div>
   );

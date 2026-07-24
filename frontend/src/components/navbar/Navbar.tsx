@@ -21,7 +21,7 @@ export default function Navbar({ user, onLogout }: Readonly<NavbarProps>) {
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-40 grid grid-cols-3 items-center border-b border-border bg-background px-4 py-3 sm:px-6">
+    <header className="fixed w-full top-0 z-40 grid grid-cols-3 items-center border-b border-border bg-background px-4 py-3 sm:px-6">
       <Menu />
 
       <NavLink to="/" className="justify-self-center">
