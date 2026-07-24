@@ -15,42 +15,41 @@ interface MessageInputGroupProps {
   sending: boolean;
 }
 
-export default function MessageInputGroup({
-  inputRef,
-  onSubmit,
-  sending,
-}: MessageInputGroupProps) {
+export default function MessageInputGroup({ inputRef, onSubmit, sending }: MessageInputGroupProps) {
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit();
-      }}
-      className="pt-4"
-    >
-      <InputGroup>
-        <InputGroupInput
-          ref={inputRef}
-          placeholder="Type a message..."
-          autoComplete="off"
-          disabled={sending}
-        />
-        <InputGroupAddon align="inline-end">
-          <InputGroupButton
-            type="submit"
-            size="icon-sm"
-            variant="default"
-            disabled={sending}
-            aria-label="Send message"
-          >
-            {sending ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <HugeiconsIcon icon={SentIcon} size={16} />
-            )}
-          </InputGroupButton>
-        </InputGroupAddon>
-      </InputGroup>
-    </form>
+    <div className={'MessageInputGroup fixed p-8 bottom-0 left-0 w-full'}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit();
+        }}
+      >
+        <div>
+          <InputGroup className={'bg-background w-full max-w-md m-auto'}>
+            <InputGroupInput
+              ref={inputRef}
+              placeholder="Type a message..."
+              autoComplete="off"
+              disabled={sending}
+            />
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton
+                type="submit"
+                size="icon-sm"
+                variant="default"
+                disabled={sending}
+                aria-label="Send message"
+              >
+                {sending ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <HugeiconsIcon icon={SentIcon} size={16} />
+                )}
+              </InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
+        </div>
+      </form>
+    </div>
   );
 }
