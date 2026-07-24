@@ -24,6 +24,7 @@ export default function Home() {
         setShowSuggestions(false);
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -52,7 +53,7 @@ export default function Home() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 mt-18 p-6">
       <div ref={searchBoxRef} className="relative mx-auto w-full max-w-md">
         <div className="relative">
           <HugeiconsIcon

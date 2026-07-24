@@ -9,6 +9,7 @@ import Home from '@/pages/Home.tsx';
 import AppLayout from '@/layout/AppLayout.tsx';
 import { useEffect } from 'react';
 import ProtectedRoute from '@/components/protectedRoute/ProtectedRoute.tsx';
+import CustomSection from '@/components/customSection/CustomSection.tsx';
 import { getMe, setToken, logout } from '@/lib/api';
 import { useAppStore } from '@/store/appStore.ts';
 
@@ -73,7 +74,14 @@ function App() {
       <Route element={<ProtectedRoute user={user} />}>
         <Route element={<AppLayout user={user!} onLogout={handleLogout} />}>
           <Route index element={<Home />} />
-          <Route path="/profile" element={<MyProfile user={user!} />} />
+          <Route
+            path="/profile"
+            element={
+              <CustomSection>
+                <MyProfile user={user!} />
+              </CustomSection>
+            }
+          />
           <Route path="/chat" element={<Chat />} />
           <Route path="/chat/:conversationId" element={<Chat />} />
         </Route>
